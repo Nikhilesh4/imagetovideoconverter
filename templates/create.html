@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /* styling for the body */
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        /* Global  setting  styles for all */
+        * {
+            padding: 0;
+            margin: 0;
+            text-decoration: none;
+            list-style: none;
+            box-sizing: border-box;
+        }
+
+        /*  for  header section */
+        .d {
+            background-color: #c9d6ff;
+            color: #290444;
+            padding-top: 5.5%;
+            padding-bottom: 15%;
+            padding-left: 6%;
+            padding-right: 2%;
+            background-size: cover;
+        }
+
+        /* Styling for the Home link */
+        .home {
+            width: 50%;
+            font-size: 30px;
+            text-align: left;
+            padding-top: 2%;
+        }
+
+        /* Styling for the Upload section */
+        .up {
+            align-items: center;
+            text-align: center;
+            padding-left: 35%;
+            padding-top: 2%;
+        }
+
+        /* Styling for the Upload button */
+        .upload {
+            padding-bottom: 15%;
+            background-color: #e3e3e3;
+        }
+
+        /* Styling for the Drag and drop area */
+        .drag {
+            font-size: 30px;
+            background-color: #d5cece;
+            margin: 50px;
+            width: 40%;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: background-color 0.5s ease;
+            padding-left: 3%;
+            padding-right: 2%;
+            padding-bottom: 7%;
+            padding-top: 3%;
+            color: rgb(12, 10, 11);
+        }
+
+        /* Styling for the drop zone */
+        #drop-zone {
+            width: 70%;
+            border: 2px dashed black;
+            padding-top: 7%;
+            padding-right: 4%;
+            padding-bottom: 10%;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 4%;
+        }
+
+        /* Styling for the image preview section */
+        #image-preview {
+            font-size: 30px;
+            background-color: #fff;
+            margin: 50px;
+            width: 90%;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+            text-align: left;
+            display: flex;
+            transition: background-color 0.5s ease;
+            padding-right: 2%;
+            padding-bottom: 5%;
+            padding-top: 1%;
+            color: rgb(12, 10, 11);
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        /* Styling for the 'Upload Name' section */
+        .un {
+            padding-top: 2%;
+            padding-left: 0.5%;
+            padding-right: 5%;
+        }
+
+        /* Styling for the 'Upload Name' button */
+        .upnam {
+            text-align: center;
+            padding-top: 0.5%;
+            padding-bottom: 0.5%;
+            border: 2px solid #181c47;
+            width: 12%;
+            background-color: #181c47;
+            border-radius: 8px;
+            text-decoration: none;
+            color: white;
+            padding-right: 2%;
+            padding-left: 2%;
+        }
+
+        /* Styling for the 'Back' section */
+        .back {
+            font-size: 30px;
+            background-color: #fff;
+            margin: 50px;
+            width: 38%;
+            float: left;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+            text-align: left;
+            display: flex;
+            transition: background-color 0.5s ease;
+            padding-right: 2%;
+            padding-top: 1%;
+            color: rgb(12, 10, 11);
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        /* Styling for the 'Background Music' preview */
+        #bgm-preview {
+            margin-top: 20px;
+        }
+
+        /* Styling for the 'Image Selection' modal */
+        #image-selection-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(249, 249, 249, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Styling for the 'Image Selection' modal content */
+        #image-selection-modal-content {
+            background-color: #f0ebeb;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        /* Styling for the 'Slideshow Controls' section */
+        #slideshow-controls {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        /* Styling for the 'Create' section */
+        .create {
+            padding-top: 2%;
+            background-color: #9f9ffc;
+        }
+
+        /* Styling for the 'Select' section */
+        .select {
+            font-size: 30px;
+            background-color: #fff;
+            margin: 50px;
+            width: 90%;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+            padding-left: 9%;
+            padding-top: 4%;
+            color: rgb(12, 10, 11);
+        }
+
+        /* Styling for the 'Select' section image */
+        .select img {
+            max-width: 15%;
+            /* Set the maximum width of the image to 100% of its container */
+            height: 5%;
+            /* Maintain the aspect ratio of the image */
+        }
+
+        /* Styling for the 'Image' section */
+        .ima {
+            font-size: 30px;
+            background-color: #fff;
+            margin: 50px;
+            width: 95%;
+            display: flex;
+            flex-wrap: wrap;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+            transition: background-color 0.5s ease;
+            padding-bottom: 20%;
+            color: rgb(12, 10, 11);
+            margin-top: 20px;
+        }
+
+        /* Styling for the 'Preview' section */
+        .preview {
+            text-align: center;
+            padding-right: 7%;
+            padding-top: 4%;
+            padding-bottom: 40%;
+            padding-left: 10%;
+            background-color: #9696fb;
+            align-content: space-between;
+        }
+
+        /* Styling for the 'Create Video' section */
+        .createvideo {
+            padding-top: 5%;
+            padding-bottom: 40%;
+            padding-left: 10%;
+            background-color: #8c8cdc;
+        }
+
+        /* Styling for the 'Preview' button */
+        .preview button {
+            text-decoration: none;
+            font-size: 20px;
+            background-color: transparent;
+            border: none;
+            padding-right: 7%;
+            color: white;
+        }
+
+        /* Styling for the 'Slide' section */
+        .slide {
+            padding-bottom: 5%;
+        }
+
+        /* Styling for the 'Link' section */
+        .link {
+            padding-left: 5%;
+        }
+
+        /* Styling for the 'Clear' button */
+        .cl {
+            text-align: center;
+            padding-top: 0.5%;
+            padding-bottom: 0.5%;
+            border: 2px solid #c1c1fa;
+            width: 12%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+            background-color: #d1d1ff;
+            border-radius: 8px;
+            text-decoration: none;
+            color: black;
+            padding-right: 1%;
+        }
+
+        /* Styling for the 'Create' button */
+        .cr {
+            text-align: center;
+            padding-top: 0.5%;
+            padding-bottom: 0.5%;
+            border: 2px solid #b4b4e8;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+            width: 12%;
+            background-color: #c8c8ff;
+            border-radius: 8px;
+            text-decoration: none;
+            color: black;
+            padding-right: 1%;
+            justify-content: space-around;
+        }
+
+        .container {
+            background-color: #fff;
+            /* Change to desired background color */
+            padding: 20px;
+            border-radius: 10px;
+            margin-left: 3%;
+
+            font-size: 30px;
+            padding-left: 5%;
+            width: 50%;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+            padding-top: 1%;
+            float: left;
+
+
+        }
+
+        .video_con {
+            float: right;
+
+        }
+
+        footer {
+            text-align: center;
+            font-size: 80px;
+            clear: both;
+        }
+
+        .aud {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .aud-item {
+            margin-bottom: 10px;
+            /* Optional: Add some space between items */
+        }
+
+
+        /* Styling for the 'Heading' section */
+        .head {
+            text-align: left;
+            font-size: 60px;
+            color: #0A014F;
+        }
+
+        /* Styling for the 'Selected Images Preview' section */
+        #selected-images-preview img {
+            width: 25%;
+            /* Set the maximum width of the image to 10Sele0% of its container */
+            height: 5%;
+            /* Maintain the aspect ratio of the image */
+            flex: 0 0 auto;
+        }
+
+        /* Styling for the 'Selected Image Button' section */
+        .selected-image-button {
+            background-color: transparent;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        /* Styling for the 'Manipulation' section */
+        .mani {
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+            background-color: #d1d1ff;
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        /* Styling for the 'Slideshow Container' section */
+        #slideshow-container {
+            font-size: 30px;
+            background-color: #fff;
+            padding-left: 30%;
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+            transition: background-color 0.5s ease;
+            padding-top: 1%;
+            color: rgb(12, 10, 11);
+        }
+
+        /* Styling for the 'Slideshow Container' image */
+        #slideshow-container img {
+            width: 50%;
+            height: 10%;
+        }
+        .video-container {
+            font-size: 50px;
+            text-align: center;
+            text-align: justify;
+            float: right;
+            display: flex;
+            justify-content: center;
+            /* Horizontally center the content */
+            align-items: center;
+            /* Vertically center the content */
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+</head>
+
+<body>
+    <!-- JavaScript script source -->
+    <!-- <script src="main.js"></script> -->
+
+    <!-- Create section with 'Uploaded Images' button -->
+    <section id="create" class="create">
+        <button
+            style="background-color: transparent;border: none;font-size: 40px;text-align:center;margin-left:40%;">UPLOADED
+            Images</button>
+
+        <!-- 'Select' section -->
+        <div class="select">
+            <div class="selecti">
+                <br>
+                <!-- Container for displaying uploaded images -->
+                <div class="uploaded-images-container">
+                    <!-- Loop through uploaded images and display them with a 'Select Image' button -->
+                    {% for image in uploaded_images %}
+                    <div class="uploaded-image-container" style="display:inline; vertical-align:top;">
+                        <img class="uploaded-image" src="{{ image }}" alt="Uploaded Image">
+                        <button style="position:relative;right:9%;font-size:15px;color:blue;"
+                            class="selected-image-button" onclick="selectImage('{{ image }}')">
+                            <br> <br> Select Image <br> <br>
+                        </button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Script for handling image selection -->
+        <script>
+            // Maintain a JavaScript array to store selected images
+            var selectedImages = [];
+
+            // Function to add selected image to the array
+            function selectImage(imageUrl) {
+                selectedImages.push(imageUrl);
+                updateSelectedImagesList();
+            }
+            // Function to update the list of selected images
+            function updateSelectedImagesList() {
+                var selectedImagesList = document.getElementById('selected-images-list');
+                selectedImagesList.innerHTML = '';
+
+                selectedImages.forEach(function (imageUrl) {
+                    var listItem = document.createElement('li');
+                    var selectedImage = document.createElement('img');
+                    selectedImage.src = imageUrl;
+                    selectedImage.alt = 'Selected Image';
+                    listItem.appendChild(selectedImage);
+                    selectedImagesList.appendChild(listItem);
+                });
+            }
+            // Function to create a video with selected images
+            function createVideo() {
+                if (selectedImages.length === 0) {
+                    alert('Please select at least one image.');
+                    return;
+                }
+
+                // Get the selected song ID
+                var imageDuration = document.getElementById('image-duration').value;
+                var selectedSongId = document.getElementById('song').value;
+                var transitionEffect = document.getElementById('transitionEffect').value;
+                var videoResolution = document.getElementById('videoResolution').value;
+                var videoQuality = document.getElementById('videoQuality').value;
+                
+                console.log(transitionEffect);
+                console.log(videoQuality);
+                console.log(videoResolution);
+                console.log(selectedImages);
+                var data = {
+                    images: selectedImages,
+                    songId: selectedSongId,
+                    imageDuration: parseInt(imageDuration),// Convert to integer
+                    transitionEffect: transitionEffect,
+                    videoResolution: videoResolution,
+                    videoQuality: videoQuality
+                };
+                // Send the data as JSON
+
+                // AJAX request
+
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '/create-video', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.responseType = 'blob'; // Set response type to blob
+
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4) {
+                        if (xhr.status === 200) {
+                            var videoBlob = xhr.response;
+                            var videoUrl = URL.createObjectURL(videoBlob);
+
+                            // Display the video in an HTML video element
+                            var videoElement = document.createElement('video');
+                            videoElement.src = videoUrl;
+                            videoElement.width = 640;
+                            videoElement.height = 480;
+                            videoElement.controls = true;
+                            var videoContainer = document.getElementById('video-container');
+                            videoContainer.appendChild(videoElement);
+                        } else {
+                            alert('Failed to create video.');
+                        }
+                    }
+                };
+                xhr.send(JSON.stringify(data));
+            }
+
+            document.getElementById('create-video-btn').addEventListener('click', createVideo);
+        </script>
+
+        <!-- Section for displaying selected images -->
+        <!-- Your HTML for displaying selected images -->
+        <p style="font-size:40px;text-align:center"> Selected images </p>
+        <div class="ima">
+            <div id="selected-images-preview">
+                <div style="display:inline">
+                    <ul id="selected-images-list" style="padding-left:25px;padding-top:15px;"></ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section for selecting and playing songs -->
+        <!-- Your button to create the video -->
+        <br><br>
+        <div style="background-color:transparent">
+            <h1 style="margin-left:50px;font-size:40px">Select and Play Songs</h1>
+            <div class="container">
+                <div class="aud">
+                    <div class="aud-item">
+                        <label for="transitionEffect">Select Transition Effect:</label>
+                        <select id="transitionEffect">
+                            <option value="fade">Fade</option>
+                            <option value="slide">Slide</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Video Resolution Selector -->
+                    <div class="aud-item">
+                        <label for="videoResolution">Select Video Resolution:</label>
+                        <select id="videoResolution">
+                            <option value="144p">144p</option> 
+                            <option value="240p">240p</option> 
+                            <option value="360p">360p</option> 
+                            <option value="480p">480p</option>
+                            <option value="720p">720p</option>
+                            <option value="1080p">1080p</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Video Quality Selector -->
+                    <div class="aud-item">
+                        <label for="videoQuality">Select Video Quality:</label>
+                        <select id="videoQuality">
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="image-duration">Image Duration (in seconds):</label>
+                        <input type="number" id="image-duration" name="image-duration" min="1" value="5">
+                        
+                    </div>
+                    <form class="aud-item">
+                        <label for="song">Select a Song:</label>
+                        <select name="song" id="song" required>
+                            <!-- Loop through songs and display options -->
+                            {% for song in songs %}
+                            <option value="{{ song.id }}">{{ song.file_name }}</option>
+                            {% endfor %}
+                        </select>
+                        
+                        <br><br>
+                        
+                        <!-- Buttons for controlling audio playback -->
+                        <button class="mani" type="button" onclick="playSelectedSong()">Play</button>
+                        <button class="mani" type="button" onclick="pausePlayback()">Pause</button>
+                        <button class="mani" type="button" onclick="resumePlayback()">Continue</button>
+                    </form>
+                    
+                    <!-- Audio player -->
+                    <audio id="audioPlayer" controls>
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+            </div>
+        </div>
+        <div id="video-container" style="font-size: 40px;  text-align: center;padding-bottom: 10px;"><b>Created video will be displayed here</b></div>
+        <script>
+            document.getElementById('createVideoBtn').addEventListener('click', function () {
+                // Get the selected song id
+                var selectedSongId = document.getElementById('song').value;
+                
+                // Get the username from local storage
+                var username = localStorage.getItem('username');
+                // Send data to the backend
+                fetch('/create-video', {
+                    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+                    },
+    body: JSON.stringify({
+        songId: selectedSongId,
+    username: username
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+        // Handle the response from the backend
+        console.log(data);
+                    })
+                    .catch(error => {
+        console.error('Error:', error);
+                    });
+            });
+        </script>
+        <!-- Links for creating video and previewing -->
+        <br><br><br><br>
+        <footer></footer>
+        <br>
+        <div class="link">
+            <button class="mani" type="button" onclick="createVideo()">Create Video</button>
+            <a href="#preview"
+                style="text-decoration: none; color: #000; padding: 10px 20px; border-radius: 5px; border: 1px solid #ccc; box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);background-color:#d1d1ff;">click
+                for preview </a>
+        </div>
+
+        <!-- Section for previewing slideshow -->
+        <br><br><br>
+        <section class="preview" id="preview">
+            <div id="slideshow-controls">
+                <!-- Buttons for controlling slideshow -->
+                <div class="slide">
+                    <button onclick="startSlideshow()">Start Slideshow</button>
+                    <button onclick="pauseSlideshow()">Pause/Resume Slideshow</button>
+                    <button onclick="stopSlideshow()">Stop Slideshow</button>
+                </div>
+                <!-- Container for slideshow images -->
+                <div id="slideshow-container" class="slideshow-container"></div>
+            </div>
+        </section>
+
+        <!-- Script for handling slideshows and audio playback -->
+        <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg/standalone/ffmpeg.min.js"></script>
+        <script>
+    var slideshowIndex = 0;
+    var slideshowInterval;
+    var selectedImages = JSON.parse(localStorage.getItem('selectedImages')) || [];
+
+    function startSlideshow() {
+        showSlides();
+    slideshowInterval = setInterval(showSlides, 2000);
+
+    // Start playing the selected audio
+    playSelectedSong();
+            }
+
+    // Function to show slides in the slideshow
+    function showSlides() {
+                var slides = document.querySelectorAll('#selected-images-list img');
+    var slideshowContainer = document.getElementById('slideshow-container');
+
+                if (slides.length > 0) {
+        slides.forEach(function (slide) {
+            slide.style.display = 'none';
+        });
+
+    slideshowIndex++;
+
+                    if (slideshowIndex > slides.length) {
+        slideshowIndex = 1;
+                    }
+
+    slides[slideshowIndex - 1].style.display = 'block';
+    slideshowContainer.innerHTML = slides[slideshowIndex - 1].outerHTML;
+                }
+            }
+
+    // Function to pause the slideshow
+    function pauseSlideshow() {
+        clearInterval(slideshowInterval);
+    pausePlayback();
+            }
+
+    // Function to stop the slideshow
+    function stopSlideshow() {
+        clearInterval(slideshowInterval);
+    slideshowIndex = 0;
+    var slides = document.querySelectorAll('#selected-images-list img');
+    slides.forEach(function (slide) {
+        slide.style.display = 'none';
+                });
+
+    stopPlayback();
+            }
+
+    // Function to play the selected song
+    // Function to play the selected song
+    function playSelectedSong() {
+                const selectedSongId = document.getElementById('song').value;
+    const audioPlayer = document.getElementById('audioPlayer');
+
+    // Update the audio source and play
+    audioPlayer.src = `/playaudio/${selectedSongId}`;
+                audioPlayer.load();
+                audioPlayer.play();
+            }
+
+            // Function to pause audio playback
+            function pausePlayback() {
+                document.getElementById('audioPlayer').pause();
+            }
+
+            // Function to stop audio playback
+            function stopPlayback() {
+                document.getElementById('audioPlayer').pause();
+                document.getElementById('audioPlayer').currentTime = 0;
+            }
+
+            // Load selected images from local storage
+            function loadSelectedImages() {
+                var selectedImagesList = document.getElementById('selected-images-list');
+
+                selectedImages.forEach(function (imageUrl) {
+                    var listItem = document.createElement('li');
+                    var selectedImage = document.createElement('img');
+                    selectedImage.src = imageUrl;
+                    selectedImage.alt = 'Selected Image';
+                    listItem.appendChild(selectedImage);
+                    selectedImagesList.appendChild(listItem);
+                });
+            }
+            function clearSelectedImages() {
+                selectedImages = [];  // Clear the array
+                localStorage.setItem('selectedImages', JSON.stringify(selectedImages));
+                loadSelectedImages();  // Reload the updated list
+            }
+            clearSelectedImages();
+            // Load selected images on page load
+            loadSelectedImages();
+        </script>
+    </section>
+</body>
+
+</html>

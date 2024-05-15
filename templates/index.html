@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>User List</title>
+    <style>
+        .limiter {
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 2;
+            color: #212529;
+        }
+
+        .container_table100 {
+            width: 100%;
+            min-height: 100vh;
+            background: #c4d3f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 33px 30px;
+        }
+
+        .wrap_table100 {
+            border-collapse: collapse;
+            width: 50%;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .row_header {
+            font-style: italic;
+            color: #fff;
+            background: #6c7ae0;
+            font-size: 30px;
+
+        }
+
+        .row {
+            display: table-row;
+            background-color: #6c7ae0;
+
+        }
+
+        td {
+            border-bottom: 1px solid rgb(203, 203, 203);
+            /* Add a solid black border to the bottom of each cell */
+            padding: 8px;
+            /* Optional: Add padding to cells for better spacing */
+        }
+
+        tr:first-child td {
+            border-top: none;
+            /* Remove the border from the first row */
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+            /* Remove the border from the last row */
+        }
+
+        .row_header:hover {
+            cursor: pointer;
+            background: #ddd4ff;
+            transition: transform 0.2s ease;
+            /* Change hover background color for header */
+        }
+
+        .row:hover .cell {
+            cursor: pointer;
+            /* Change hover effect for table data */
+            transition: transform 0.2s ease;
+            background: #ddd4ff;
+            color: #f6f6f6;
+        }
+
+        .row {
+            
+            display: table-row;
+            background-color: #fff;
+        }
+
+        .row .cell {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 25px;
+            color: #666;
+            line-height: 1;
+            padding-top: 20px;
+            padding-bottom: 20px;
+            border-radius: 1px solid #f2f2f2;
+            border-collapse: collapse;
+        }
+
+        .cell {
+            display: table-cell;
+        }
+
+        .row .cell:nth-child(1) {
+            padding-left: 15%;
+
+        }
+
+        .row .cell:nth-child(1) {
+            width: 360px;
+        }
+
+        .row .cell:nth-child(2) {
+            padding-left: 15%;
+
+        }
+
+        .row .cell:nth-child(2) {
+            padding-right: 5%;
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="limiter" style="padding-left:0px;">
+        <div class="container_table100">
+            <table class="wrap_table100">
+                <tr class="row_header">
+                    <th class="cell">Username</th>
+                    <th class="cell">Email</th>
+                </tr>
+                {% for user in users %}
+                <tr class="row">
+                    <td class="cell" data-title="Username">{{ user[0] }}</td>
+                    <td class="cell" data-title="Email">{{ user[1] }}</td>
+                </tr>
+                {% endfor %}
+
+            </table>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            background-color: #dea1ff;
+        }
+
+        .imad {
+            font-size: 30px;
+            background-color: #fff;
+            margin: 50px;
+            width: 90%;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+            text-align: left;
+            transition: background-color 0.5s ease;
+
+            color: rgb(12, 10, 11);
+        }
+
+        .imad img {
+            margin: 25px 0px 0px 50px;
+            width: 10%;
+            /* Set the maximum width of the image to 100% of its container */
+            height: 30%;
+        }
+
+        .un {
+            padding-top: 2%;
+            padding-left: 5%;
+            padding-right: 5%;
+        }
+
+        .upnam {
+            text-align: center;
+            padding-top: 0.5%;
+            padding-bottom: 0.5%;
+            border: 2px solid #181c47;
+            width: 12%;
+            background-color: #181c47;
+            border-radius: 8px;
+            text-decoration: none;
+            color: white;
+            padding-right: 2%;
+            padding-left: 2%;
+        }
+
+        .upnam:hover {
+            background-color: #3473ea;
+        }
+
+        .ripple {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ripple::before {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            transition: all 0.4s ease;
+            transform: scale(0);
+        }
+
+        .ripple:hover::before {
+            width: 100%;
+            height: 100%;
+            transform: scale(2);
+            left: 50%;
+            top: 50%;
+            opacity: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="imad">
+        {% for image in uploaded_images %}
+        <div style="display:inline; vertical-align:top;">
+            <img class="uploaded-image" src="{{ image }}" alt="Uploaded Image">
+        </div>
+        {% endfor %}
+    </div>
+    <div class="un">
+        <a href="{{ url_for('display_page') }}" class="upnam ripple">UPLOAD IMAGES</a>
+    </div>
+
+    <div class="un">
+        <a href="{{ url_for('dis') }}" class="upnam ripple"> create videos </a>
+    </div>
+</body>
+
+</html>

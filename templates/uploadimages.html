@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uploaded Images </title>
+    <style>
+        .uploaded-image {
+            width: 300px;
+            height: auto; 
+            margin-bottom: 20px; 
+            margin-right: 20px;
+        }
+        .drop-zone {
+            border: 2px dashed #ccc;
+            width: 300px;
+            height: 150px;
+            margin: 20px 0;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+            cursor: pointer;
+        }
+        .drop-zone.dragover {
+            background-color: #f0f0f0;
+        }
+        #file-input {
+            display: none;
+        }
+        .drag{
+            font-size: 24px;
+                background-color: #e7fbfd;
+                margin: 50px;
+                width: 26%;
+                margin-left:36%;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+                text-align: left;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                transition: background-color 0.5s ease;
+                padding-left: 1%;
+                padding-right: 2%;
+                padding-bottom: 7%;
+                padding-top: 3%;    
+                color:  rgb(12, 10, 11);
+        }
+        .uplo {
+            font-size: 30px;
+                background-color: #e7fbfd;
+                margin: 50px;
+                width: 90%;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+                text-align: left;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                transition: background-color 0.5s ease;
+                padding-left: 3%;
+                padding-right: 2%;
+                padding-bottom: 7%;
+                padding-top: 3%;    
+                color:  rgb(12, 10, 11);
+        }
+    </style>
+</head>
+<body style="background-color: #e0e0ff;" >
+    <div class="drag">
+        <h1 style="text-align:center;">Upload Images</h1>
+    <!-- Drag and drop area with file input -->
+    <div id="drop-zone" class="drop-zone" style="margin:20px auto;" ondragover="handleDragOver(event)" ondrop="handleDrop(event)" onclick="openFileSelector()">
+        Drag & drop images here or click to select
+        <input type="file" id="file-input" name="images" multiple>
+    </div>
+    <!-- Browse button --> 
+    <input type="file" id="browse-button" name="images" style="margin-left: 165px; margin-top: 25px;" multiple onchange="handleFiles(this.files)">
+    <!-- Display uploaded image filename -->
+    <div id="filename"></div>
+    <!-- Metadata input field -->
+    <form action="/upload" method="POST" style="padding-top:5%" enctype="multipart/form-data">
+        <input type="submit" value="Upload">
+    </form>
+</div>
+
+  
+
+    <script>
+        function handleDragOver(event) {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'copy';
+            event.target.classList.add('dragover');
+        }
+
+        function handleDrop(event) {
+            event.preventDefault();
+            event.target.classList.remove('dragover');
+            var files = event.dataTransfer.files;
+            handleFiles(files);
+        }
+
+        function openFileSelector() {
+            document.getElementById('file-input').click();
+        }
+
+        function handleFiles(files) {
+            var filename = files[0].name;
+            document.getElementById('filename').innerText = filename;
+            uploadFiles(files);
+        }
+
+        function uploadFiles(files) {
+            var form = new FormData();
+            for (var i = 0; i < files.length; i++) {
+                form.append('images', files[i]);
+            }
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/upload', true);
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    displayUploadedImages();
+                } else {
+                    alert('Error uploading images. Please try again.');
+                }
+            };
+            xhr.send(form);
+        }
+
+        function displayUploadedImages() {
+            var uploadedImagesDiv = document.getElementById('uploaded-images');
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    uploadedImagesDiv.innerHTML = xhr.responseText;
+                }
+            };
+            xhr.open('GET', '/display', true);
+            xhr.send();
+        }
+
+        // Call the function to display uploaded images when the page loads
+        window.onload = displayUploadedImages;
+    </script>
+    <div class="uplo">
+        <h1 style="text-align:center; margin-bottom: 50px;margin-top: 50px;">Uploaded Images</h1>
+        <div id="uploaded-images" style="margin-bottom: -20px;">
+    {% for image in uploaded_images %}
+        <div style="height: 100px; ; display: inline; vertical-align: top;">
+            <img style="width:400px;margin: 25px 0px 0px 10px;padding: 5px;" src="{{ image }}" alt="Uploaded Image">
+        
+            </div>
+        </div>
+    {% endfor %}
+
+    </div>
+</div>
+    <div style="padding-left: 5%;margin-top: 60px;">
+        <a href="{{ url_for('dis') }}" style="font-size: 30px;color: black;box-shadow: 0 0 10px rgba(0, 0, 0, 0.9); border-radius: 5%;background-color: #d5cece;text-decoration: none;margin-bottom: 10px;margin-left: 43%;">create video </a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Slideshow with BGM</title>
+    <link rel="stylesheet" href="main.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #c9d6ff;
+            color: black;
+        }
+
+        * {
+            padding: 0;
+            margin: 0;
+            text-decoration: none;
+            list-style: none;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .d {
+            padding-top: 2%;
+            padding-bottom: 5%;
+            padding-left: 6%;
+            padding-right: 2%;
+            background-size: cover;
+        }
+
+        .home {
+            width: 50%;
+            font-size: 30px;
+            text-align: left;
+            padding-top: 2%;
+        }
+
+        .un {
+            padding-top: 2%;
+            padding-left: 0.5%;
+            padding-right: 5%;
+        }
+
+        .un a {
+            border-color: rgb(83, 11, 149);
+            color: black;
+            transition: all 0.3s ease;
+        }
+
+        .un a:hover {
+            background-color: rgb(83, 11, 149);
+            color: white;
+            border-color: rgb(83, 11, 149);
+        }
+
+        .upnam {
+            text-align: center;
+            padding-top: 0.5%;
+            padding-bottom: 0.5%;
+            border: 2px solid;
+            width: 12%;
+            border-radius: 8px;
+            text-decoration: none;
+            padding-right: 2%;
+            padding-left: 2%;
+            transition: all 0.3s ease;
+        }
+
+        .head {
+            text-align: left;
+            font-size: 60px;
+        }
+
+        .topnav {
+            overflow: hidden;
+            background-color: rgb(83, 11, 149);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topnav a {
+            padding-top: 1%;
+            float: left;
+            padding-left: 10%;
+            padding-right: 10%;
+            text-decoration: none;
+            font-size: 17px;
+            padding-bottom: 30px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .topnav a:hover {
+            color: black;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 20px;
+            margin-right: 30%;
+            margin-left: 30%;
+            animation: zoomOut 0.5s ease-out forwards;  
+        }
+
+        .container div {
+            background-color: white;
+            border: 3.5px solid;
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        @keyframes zoomOut {
+            from {
+                transform: scaleY(0);
+                opacity: 0;
+            }
+
+            to {
+                transform: scaleY(1);
+                opacity: 1;
+            }
+        }
+
+        p {
+            animation: fadeIn 2s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var zoomOutElement = document.getElementById('zoomOut');
+            var windowHeight = window.innerHeight;
+
+            function isElementInViewport(el) {
+                var rect = el.getBoundingClientRect();
+                return (
+                    rect.top >= 0 &&
+                    rect.left >= 0 &&
+                    rect.bottom <= windowHeight &&
+                    rect.right <= window.innerWidth
+                );
+            }
+
+            function handleScroll() {
+                if (isElementInViewport(zoomOutElement)) {
+                    zoomOutElement.classList.add('animate');
+                    window.removeEventListener('scroll', handleScroll);
+                }
+            }
+
+            window.addEventListener('scroll', handleScroll);
+        });
+    </script>
+</head>
+<body>
+
+    <div class="topnav">
+        <ul style="text-align: center;">
+            <li><a class="active" href="#home">Home</a></li>
+            <li><a href="#user">User Details </a></li>
+            <li><a href="{{ url_for('uploadedimages') }}"> Image gallery </a></li>
+            <li><a href="{{ url_for('logout')}}">LOGOUT</a></li>
+        </ul>
+    </div>
+    <section id="home">
+        <div class="d">
+            <h1> {% if data %}
+                <p> WELCOME <span style=" font-size : 80px;color: rgb(83, 11, 149);"> {{ data['username'] }}</span></p>
+                {% endif %}
+            </h1>
+            <br>
+
+            <h1 class="head" style="color: rgb(83,11,149);"> Image to video Maker </h1>
+            <p class="home">
+                "Transform your cherished memories with our Image to Video Converter app! Effortlessly convert your
+                photos into captivating videos in just a few clicks. Add music, effects, and personalize your visual
+                stories. Whether it's a special occasion, a travel adventure, or daily moments, bring your pictures to
+                life with dynamic transitions. Share your creations on social media or keep them as precious mementos.
+                Embrace the power of visuals – download our app now and turn your images into unforgettable cinematic
+                experiences!"
+            </p>
+            <div class="un">
+                <a href="{{ url_for('display_page') }}" class="upnam">UPLOAD IMAGES</a>
+            </div>
+
+            <div class="un">
+                <a href="{{ url_for('dis') }}" class="upnam"> create videos </a>
+            </div>
+        </div>
+    </section>
+    <section id="user" style="padding-top:7%;">
+        <h1 style="text-align:center;margin-bottom:7px;color: rgb(83, 11, 149);">User Details</h1>
+        <div class="container" id="zoomOut" style="margin-bottom: 50px;">
+            <div style="font-size:20px;"><span style="font-size:25px;">
+                    {% if data %}
+                    <span style="font-size:25px;color:rgb(83,11,149);"> Name : </span>{{ data['username'] }} <br><br>
+                    <span style="color: rgb(83,11,149);color:rgb(83,11,149);">EMail: </span>{{ data['email'] }}<br><br><br>
+                    "Transform your cherished memories with our Image to Video Converter app! Effortlessly
+                    convert your photos into captivating videos in just a few clicks. Add music, effects,
+                    and personalize your visual stories. Whether it's a special occasion, a travel adventure,
+                    or daily moments, bring your
+                    <br> <br>
+                    {% endif %}
+            </span>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
