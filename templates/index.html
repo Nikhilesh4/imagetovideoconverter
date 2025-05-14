@@ -1,152 +1,307 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <title>User List</title>
-    <style>
-        .limiter {
-            width: 100%;
-            margin: 0 auto;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Directory</title>
+  <style>
+    :root {
+      --primary: #3a36e0;
+      --primary-light: #6c63ff;
+      --primary-dark: #2c3e50;
+      --secondary: #f0f4f8;
+      --accent: #00d4ff;
+      --text-dark: #2d3748;
+      --text-light: #f7fafc;
+      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --radius: 12px;
+      --transition: all 0.3s ease;
+    }
 
-        * {
-            padding: 0;
-            margin: 0;
-            box-sizing: border-box;
-        }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-        body {
-            font-size: 1rem;
-            font-weight: 400;
-            line-height: 2;
-            color: #212529;
-        }
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: var(--text-dark);
+      line-height: 1.6;
+    }
 
-        .container_table100 {
-            width: 100%;
-            min-height: 100vh;
-            background: #c4d3f6;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: wrap;
-            padding: 33px 30px;
-        }
+    .container {
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
 
-        .wrap_table100 {
-            border-collapse: collapse;
-            width: 50%;
-            border-radius: 20px;
-            overflow: hidden;
-        }
+    .card {
+      background: white;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: var(--transition);
+    }
 
-        .row_header {
-            font-style: italic;
-            color: #fff;
-            background: #6c7ae0;
-            font-size: 30px;
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
 
-        }
+    .card-header {
+      background: linear-gradient(to right, var(--primary), var(--primary-light));
+      color: var(--text-light);
+      padding: 1.5rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
 
-        .row {
-            display: table-row;
-            background-color: #6c7ae0;
+    .card-header h2 {
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-        }
+    .card-header h2 svg {
+      width: 24px;
+      height: 24px;
+    }
 
-        td {
-            border-bottom: 1px solid rgb(203, 203, 203);
-            /* Add a solid black border to the bottom of each cell */
-            padding: 8px;
-            /* Optional: Add padding to cells for better spacing */
-        }
+    .table-container {
+      overflow-x: auto;
+      padding: 1rem;
+    }
 
-        tr:first-child td {
-            border-top: none;
-            /* Remove the border from the first row */
-        }
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 8px;
+    }
 
-        tr:last-child td {
-            border-bottom: none;
-            /* Remove the border from the last row */
-        }
+    thead th {
+      padding: 12px 15px;
+      text-align: left;
+      font-weight: 600;
+      color: var(--primary-dark);
+      border-bottom: 2px solid var(--primary-light);
+      position: relative;
+    }
 
-        .row_header:hover {
-            cursor: pointer;
-            background: #ddd4ff;
-            transition: transform 0.2s ease;
-            /* Change hover background color for header */
-        }
+    thead th:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--accent);
+      transition: var(--transition);
+    }
 
-        .row:hover .cell {
-            cursor: pointer;
-            /* Change hover effect for table data */
-            transition: transform 0.2s ease;
-            background: #ddd4ff;
-            color: #f6f6f6;
-        }
+    thead th:hover:after {
+      width: 100%;
+    }
 
-        .row {
-            
-            display: table-row;
-            background-color: #fff;
-        }
+    tbody tr {
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+      border-radius: var(--radius);
+      transition: var(--transition);
+      background: var(--secondary);
+      margin-bottom: 8px;
+    }
 
-        .row .cell {
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 25px;
-            color: #666;
-            line-height: 1;
-            padding-top: 20px;
-            padding-bottom: 20px;
-            border-radius: 1px solid #f2f2f2;
-            border-collapse: collapse;
-        }
+    tbody tr:hover {
+      transform: translateX(5px);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      background: white;
+    }
 
-        .cell {
-            display: table-cell;
-        }
+    tbody td {
+      padding: 15px;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
 
-        .row .cell:nth-child(1) {
-            padding-left: 15%;
+    tbody td:first-child {
+      border-left: 1px solid rgba(0, 0, 0, 0.05);
+      border-top-left-radius: var(--radius);
+      border-bottom-left-radius: var(--radius);
+      font-weight: 500;
+    }
 
-        }
+    tbody td:last-child {
+      border-right: 1px solid rgba(0, 0, 0, 0.05);
+      border-top-right-radius: var(--radius);
+      border-bottom-right-radius: var(--radius);
+    }
 
-        .row .cell:nth-child(1) {
-            width: 360px;
-        }
+    .search-bar {
+      margin-bottom: 20px;
+      position: relative;
+    }
 
-        .row .cell:nth-child(2) {
-            padding-left: 15%;
+    .search-bar input {
+      width: 100%;
+      padding: 12px 20px;
+      padding-left: 40px;
+      border: none;
+      border-radius: var(--radius);
+      background: white;
+      box-shadow: var(--shadow);
+      font-size: 16px;
+      transition: var(--transition);
+    }
 
-        }
+    .search-bar input:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(106, 99, 255, 0.3);
+    }
 
-        .row .cell:nth-child(2) {
-            padding-right: 5%;
+    .search-bar svg {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      color: var(--primary);
+    }
 
-        }
-    </style>
+    .empty-state {
+      text-align: center;
+      padding: 40px 0;
+      color: #a0aec0;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+      background: rgba(108, 99, 255, 0.1);
+      color: var(--primary);
+    }
+
+    @media (max-width: 768px) {
+      .card-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+      }
+      
+      thead th, tbody td {
+        padding: 10px;
+      }
+    }
+  </style>
 </head>
-
 <body>
-
-    <div class="limiter" style="padding-left:0px;">
-        <div class="container_table100">
-            <table class="wrap_table100">
-                <tr class="row_header">
-                    <th class="cell">Username</th>
-                    <th class="cell">Email</th>
-                </tr>
-                {% for user in users %}
-                <tr class="row">
-                    <td class="cell" data-title="Username">{{ user[0] }}</td>
-                    <td class="cell" data-title="Email">{{ user[1] }}</td>
-                </tr>
-                {% endfor %}
-
-            </table>
-        </div>
+  <div class="container">
+    <div class="search-bar">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="text" placeholder="Search users..." id="searchInput">
     </div>
-</body>
+    
+    <div class="card">
+      <div class="card-header">
+        <h2>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          User Directory
+        </h2>
+        <div class="badge">
+          <span id="userCount">0</span> users
+        </div>
+      </div>
+      
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Email</th>
+            </tr>
+          </thead>
+          <tbody id="userTableBody">
+            {% for user in users %}
+              <tr>
+                <td>{{ user[0] }}</td>
+                <td>{{ user[1] }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        
+        <div id="emptyState" class="empty-state" style="display: none;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="8" y1="12" x2="16" y2="12"></line>
+          </svg>
+          <p>No users found</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const tableBody = document.getElementById('userTableBody');
+      const rows = tableBody.getElementsByTagName('tr');
+      const searchInput = document.getElementById('searchInput');
+      const userCount = document.getElementById('userCount');
+      const emptyState = document.getElementById('emptyState');
+      
+      // Update user count
+      userCount.textContent = rows.length;
+      
+      // Handle empty table
+      if (rows.length === 0) {
+        emptyState.style.display = 'block';
+      }
+      
+      // Search functionality
+      searchInput.addEventListener('keyup', function() {
+        const searchTerm = this.value.toLowerCase();
+        let visibleCount = 0;
+        
+        for (let i = 0; i < rows.length; i++) {
+          const username = rows[i].cells[0].textContent.toLowerCase();
+          const email = rows[i].cells[1].textContent.toLowerCase();
+          
+          if (username.includes(searchTerm) || email.includes(searchTerm)) {
+            rows[i].style.display = '';
+            visibleCount++;
+          } else {
+            rows[i].style.display = 'none';
+          }
+        }
+        
+        // Show empty state if no results
+        if (visibleCount === 0) {
+          emptyState.style.display = 'block';
+        } else {
+          emptyState.style.display = 'none';
+        }
+      });
+    });
+  </script>
+</body>
 </html>

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session, send_file, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, session, send_file, jsonify, g
 import json
 import bcrypt
 import jwt
@@ -425,37 +425,37 @@ def logout():
 
     return render_template('mainpage.html')
 
-def fetch_song_from_database(song_id, output_folder):
-    # MySQL database connection configuration
-    # Connect to the database
-    conn = connect_db()
-    cursor = conn.cursor()
+# def fetch_song_from_database(song_id, output_folder):
+#     # MySQL database connection configuration
+#     # Connect to the database
+#     conn = connect_db()
+#     cursor = conn.cursor()
 
-    try:
-        # Execute SELECT query to fetch BlobData
-        query = "SELECT BlobData, file_name FROM AudioFiles WHERE id = %s"
-        cursor.execute(query, (song_id,))
-        result = cursor.fetchone()
+#     try:
+#         # Execute SELECT query to fetch BlobData
+#         query = "SELECT BlobData, file_name FROM AudioFiles WHERE id = %s"
+#         cursor.execute(query, (song_id,))
+#         result = cursor.fetchone()
 
-        if result:
-            blob_data, file_name = result
+#         if result:
+#             blob_data, file_name = result
 
-            # Write BlobData to a local file
-            output_path = os.path.join(output_folder, f"{file_name}.mp3")
-            with open(output_path, 'wb') as f:
-                f.write(blob_data)
+#             # Write BlobData to a local file
+#             output_path = os.path.join(output_folder, f"{file_name}.mp3")
+#             with open(output_path, 'wb') as f:
+#                 f.write(blob_data)
             
-            return output_path
-        else:
-            print(f"No song found with ID {song_id}")
+#             return output_path
+#         else:
+#             print(f"No song found with ID {song_id}")
 
-    except Exception as e:
-        print(f"Error fetching song: {e}")
+#     except Exception as e:
+#         print(f"Error fetching song: {e}")
 
-    finally:
-        # Close cursor and connection
-        cursor.close()
-        conn.close()
+#     finally:
+#         # Close cursor and connection
+#         cursor.close()
+#         conn.close()
 
 
 
@@ -499,124 +499,226 @@ def slide(image, slide_duration, direction, fps):
             slide_image[offset_y:, :] = image[:height - offset_y, :]
             yield slide_image
 
-
-
 @app.route('/create-video', methods=['POST'])
 def createvideo():
     data = request.get_json()
     images = data.get('images', [])
     song_id = data.get('songId')
-    videoresolution = data.get('videoResolution')
-    song=data.get('song')
-    videoquality = data.get('videoQuality')
-    print(videoresolution)
-    print(videoquality)
-    print(song)
-    print(song_id)
-    # Create video from images
-    pwd = os.getcwd()
-
-    # Define the name of the output folder
-    output_folder_name = 'output'
-
-    # Construct the full path for the output folder
-    output_folder = os.path.join(pwd, output_folder_name)
-
-    # Check if the output folder exists, if not, create it
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
-
-    print("Output folder path:", output_folder)
-
-    audio_file_path = fetch_song_from_database(song_id, output_folder)
-
-    video_filename = 'generated_video.mp4'
-
-    video_resolution = data.get('videoResolution')
-    video_quality = data.get('videoQuality')
-    resolution_map = {
-        '480p': (640, 480),
-        '720p': (1280, 720),
-        '1080p': (1920, 1080),
-    }
-    frame_size = resolution_map.get(video_resolution, (640, 480)) # Set your desired frame size
-    fps = 24  # Adjust FPS as needed
-
-    # if videoresolution:
-    # frame_size = resolution_map[videoresolution]
-    if videoquality == 'high':
-        video_codec = 'mp4v'
-    elif videoquality == 'medium':
-        video_codec = 'xvid'
-    else:
-        video_codec = 'mjpg'  # Default codec
-
-    out = cv2.VideoWriter(video_filename, cv2.VideoWriter_fourcc(*video_codec), fps, frame_size)
-
-    # Extend the video until the audio ends
-    audio_clip = AudioFileClip(audio_file_path)
-    audio_duration = audio_clip.duration
-    total_frames = int(audio_duration * fps)
-
-    # Load all images and calculate the total duration for each image
-    image_duration = data.get('imageDuration')  # Duration of each image in seconds
-    print(image_duration)
-    num_images = len(images)
-    total_image_duration = num_images * image_duration
-
-    # Calculate the number of times to repeat images to match the audio duration
-    num_repeats = int(np.ceil(audio_duration / total_image_duration))
-
-    for _ in range(num_repeats):
-        for i, image_url in enumerate(images):
-            # Decode image and convert to OpenCV format
-            response = urllib.request.urlopen(image_url)
-            image = np.asarray(bytearray(response.read()), dtype="uint8")
-            image = cv2.imdecode(image, cv2.IMREAD_COLOR)
-            image = cv2.resize(image, frame_size)
-            transition_effect = data.get('transitionEffect')
-            if transition_effect == 'fade':
+    video_resolution = data.get('videoResolution', '720p')
+    video_quality = data.get('videoQuality', 'medium')
+    image_duration = float(data.get('imageDuration', 3.0))  # Duration of each image in seconds
+    transition_effect = data.get('transitionEffect', 'fade')
+    
+    # Create a temporary directory for processing
+    import tempfile
+    temp_dir = tempfile.mkdtemp()
+    
+    try:
+        # Set video parameters based on user selection
+        resolution_map = {
+            '480p': (640, 480),
+            '720p': (1280, 720),
+            '1080p': (1920, 1080),
+        }
+        frame_size = resolution_map.get(video_resolution, (1280, 720))
+        fps = 24  # Frames per second
+        
+        # Set codec and bitrate based on quality
+        if video_quality == 'high':
+            codec = 'libx264'
+            bitrate = '2000k'
+        elif video_quality == 'medium':
+            codec = 'libx264'
+            bitrate = '1000k'
+        else:  # low
+            codec = 'libx264'
+            bitrate = '500k'
+        
+        # Fetch audio file
+        audio_file_path = os.path.join(temp_dir, f"audio_{song_id}.mp3")
+        fetch_song_from_database(song_id, temp_dir)
+        
+        # If no audio file was found, return an error
+        if not os.path.exists(audio_file_path):
+            return jsonify({'error': 'Audio file not found'}), 404
+        
+        # Get audio duration using moviepy (more efficient than creating a full AudioFileClip)
+        audio_clip = AudioFileClip(audio_file_path)
+        audio_duration = audio_clip.duration
+        
+        # Calculate how many times to cycle through images
+        num_images = len(images)
+        if num_images == 0:
+            return jsonify({'error': 'No images provided'}), 400
+            
+        total_image_duration = num_images * image_duration
+        
+        # Create output video file path
+        output_video_path = os.path.join(temp_dir, 'output.mp4')
+        final_output_path = os.path.join(temp_dir, 'final_video.mp4')
+        
+        # Preload and cache images to avoid repeated downloads
+        cached_images = []
+        for image_url in images:
+            try:
+                response = urllib.request.urlopen(image_url)
+                image_data = np.asarray(bytearray(response.read()), dtype="uint8")
+                image = cv2.imdecode(image_data, cv2.IMREAD_COLOR)
+                image = cv2.resize(image, frame_size)
+                cached_images.append(image)
+            except Exception as e:
+                print(f"Error loading image: {e}")
+                # Use a black frame as fallback
+                cached_images.append(np.zeros((frame_size[1], frame_size[0], 3), dtype=np.uint8))
+        
+        # Create video writer with optimized settings
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # mp4v is more universally compatible than x264
+        out = cv2.VideoWriter(output_video_path, fourcc, fps, frame_size)
+        
+        # Calculate transition frames
+        transition_frames = int(0.5 * fps)  # 0.5 seconds for transition
+        
+        # Generate video frames
+        current_time = 0
+        while current_time < audio_duration:
+            for img_index, image in enumerate(cached_images):
+                # Skip if we've exceeded audio duration
+                if current_time >= audio_duration:
+                    break
+                    
+                # Calculate frames for this image
+                image_frames = int(image_duration * fps)
                 
-                fade_duration = image_duration  # Fade duration in seconds
-                fade_in_out_frames = fade_in_out(image, fade_duration, fps)
+                # Apply effects based on transition_effect
+                if transition_effect == 'fade':
+                    # Fade in
+                    for i in range(min(transition_frames, image_frames // 3)):
+                        alpha = i / transition_frames
+                        frame = cv2.addWeighted(
+                            np.zeros_like(image), 1 - alpha, 
+                            image, alpha, 0
+                        )
+                        out.write(frame)
+                    
+                    # Full visibility
+                    for _ in range(image_frames - 2 * min(transition_frames, image_frames // 3)):
+                        out.write(image)
+                    
+                    # Fade out
+                    for i in range(min(transition_frames, image_frames // 3)):
+                        alpha = 1 - (i / transition_frames)
+                        frame = cv2.addWeighted(
+                            np.zeros_like(image), 1 - alpha, 
+                            image, alpha, 0
+                        )
+                        out.write(frame)
+                        
+                elif transition_effect == 'slide':
+                    # Calculate next image for smooth transition
+                    next_index = (img_index + 1) % len(cached_images)
+                    next_image = cached_images[next_index]
+                    
+                    # Regular display
+                    for _ in range(image_frames - transition_frames):
+                        out.write(image)
+                    
+                    # Slide transition
+                    for i in range(transition_frames):
+                        offset = int((frame_size[0] * i) / transition_frames)
+                        frame = image.copy()
+                        frame[:, :frame_size[0]-offset] = image[:, offset:]
+                        frame[:, frame_size[0]-offset:] = next_image[:, :offset]
+                        out.write(frame)
+                        
+                else:  # No transition effect
+                    for _ in range(image_frames):
+                        out.write(image)
+                
+                current_time += image_duration
+                if current_time >= audio_duration:
+                    break
+        
+        # Release resources
+        out.release()
+        
+        # Add audio to video using ffmpeg directly (more efficient than moviepy's write_videofile)
+        import subprocess
+        cmd = [
+            'ffmpeg', '-y',
+            '-i', output_video_path,
+            '-i', audio_file_path,
+            '-c:v', codec,
+            '-b:v', bitrate,
+            '-c:a', 'aac',
+            '-strict', 'experimental',
+            '-shortest',  # Important: end when the shortest input ends
+            final_output_path
+        ]
+        
+        subprocess.run(cmd, check=True)
+        
+        # Send the file as response and clean up after sending
+        @after_this_request
+        def cleanup(response):
+            try:
+                shutil.rmtree(temp_dir)
+            except Exception as e:
+                print(f"Error removing temp directory: {e}")
+            return response
+            
+        return send_file(final_output_path, mimetype='video/mp4', as_attachment=True)
+        
+    except Exception as e:
+        # Clean up on error
+        shutil.rmtree(temp_dir)
+        print(f"Error in video creation: {str(e)}")
+        return jsonify({'error': str(e)}), 500
 
-                for fade_in_frame, fade_out_frame in fade_in_out_frames:
-                    out.write(fade_in_frame)
-                out.write(fade_out_frame)
-            elif transition_effect == 'slide':
-                slide_duration = image_duration  # Slide duration in seconds
-                slide_frames = slide(image, slide_duration, 'left', fps)  # Change direction as needed
-                for slide_frame in slide_frames:
-                    out.write(slide_frame)
 
-    out.release()
-
-    # Create a list of video clips to concatenate
-    video_clips = []
-    
-    for _ in range(num_repeats):
-        for _ in range(num_images):
-            video_clips.append(VideoFileClip(video_filename))
-
-    # Concatenate video clips
-    final_clip = concatenate_videoclips(video_clips)
-
-    # Set the duration of the video to match the audio duration
-    final_clip = final_clip.set_duration(audio_duration)
-    # Combine video with audio
-    final_clip = final_clip.set_audio(audio_clip)
-
-    # Output file path for the final video with audio
-    shutil.rmtree(output_folder)
-    output_file_path = os.path.join(os.getcwd(), 'f.mp4')
-    print("Output file path:", output_file_path)
-
-    # Write the final video with audio
-    final_clip.write_videofile(output_file_path, codec='libx264', fps=fps)
-    
+# Helper function to ensure we clean up after response is sent
+def after_this_request(f):
+    if not hasattr(g, 'after_request_callbacks'):
+        g.after_request_callbacks = []
+    g.after_request_callbacks.append(f)
+    return f
 
 
-    return send_file(output_file_path, mimetype='video/mp4', as_attachment=True)
+@app.after_request
+def call_after_request_callbacks(response):
+    for callback in getattr(g, 'after_request_callbacks', ()):
+        callback(response)
+    return response
 
+
+def fetch_song_from_database(song_id, output_folder):
+    conn = connect_db()
+    cursor = conn.cursor()
+
+    try:
+        # Execute SELECT query to fetch BlobData
+        query = "SELECT BlobData, file_name FROM AudioFiles WHERE id = %s"
+        cursor.execute(query, (song_id,))
+        result = cursor.fetchone()
+
+        if result:
+            blob_data, file_name = result
+            # Write BlobData to a local file
+            output_path = os.path.join(output_folder, f"audio_{song_id}.mp3")
+            with open(output_path, 'wb') as f:
+                f.write(blob_data)
+            
+            return output_path
+        else:
+            print(f"No song found with ID {song_id}")
+            return None
+
+    except Exception as e:
+        print(f"Error fetching song: {e}")
+        return None
+
+    finally:
+        # Close cursor and connection
+        cursor.close()
+        conn.close()
 if __name__ == '__main__':
     app.run(debug=True, port=5691)
